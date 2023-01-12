@@ -3,26 +3,24 @@ using System.Data.SqlClient;
 
 namespace sqlapp.Services
 {
-    public class ProductService
+    public class ProductService : IProductService
     {
-        private static string db_source = "az204sqldbserver.database.windows.net";
-        private static string db_user  = "azsqlAdminUser";
-        private static string db_password = "rosesOnthesil@";
-        private static string db_database = "az204sql";
+        private readonly IConfiguration _configuration;
+
+        public ProductService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         private SqlConnection GetConnection()
         {
-            var _builder = new SqlConnectionStringBuilder();
-            _builder.DataSource= db_source;
-            _builder.UserID = db_user;
-            _builder.Password = db_password;
-            _builder.InitialCatalog= db_database;
-            return new SqlConnection(_builder.ConnectionString);
+
+            return new SqlConnection(_configuration.GetConnectionString("sqlconn"));
         }
 
         public List<Product> GetProducts()
         {
-            SqlConnection connection= GetConnection();
+            SqlConnection connection = GetConnection();
             List<Product> _productsList = new List<Product>();
             string sqlStatement = "SELECT * FROM Products";
             connection.Open();
